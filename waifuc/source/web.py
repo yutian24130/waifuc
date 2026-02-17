@@ -36,13 +36,13 @@ class WebDataSource(NamedDataSource):
                 logger.disabled = True
 
             rate = Rate(cls.__download_rate_limit__, int(math.ceil(Duration.SECOND * cls.__download_rate_interval__)))
-            limiter = Limiter(rate, max_delay=1 << 32)
+            limiter = Limiter(rate)   # ← 这里已移除 max_delay=1<<32
             setattr(cls, '_rate_limit', limiter)
 
         return getattr(cls, '_rate_limit')
 
     def _iter_data(self) -> Iterator[Tuple[Union[str, int], Union[str, Image.Image], dict]]:
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError # pragma: no cover
 
     def _iter(self) -> Iterator[ImageItem]:
         for id_, url, meta in self._iter_data():
@@ -116,10 +116,10 @@ class WebDataSource(NamedDataSource):
 
 class WebPlusDataSource(WebDataSource):
     def _check_session(self) -> bool:
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError # pragma: no cover
 
     def _refresh_session(self):
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError # pragma: no cover
 
     def _prune_session(self):
         while True:
@@ -129,7 +129,7 @@ class WebPlusDataSource(WebDataSource):
                 return
 
     def _iter_data(self) -> Iterator[Tuple[Union[str, int], str, dict]]:
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError # pragma: no cover
 
     def _iter(self) -> Iterator[ImageItem]:
         self._prune_session()
@@ -138,7 +138,7 @@ class WebPlusDataSource(WebDataSource):
 
 class DynamicUAWebDataSource(WebPlusDataSource):
     def _check_session(self) -> bool:
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError # pragma: no cover
 
     def _refresh_session(self):
         user_agent = get_random_ua()
